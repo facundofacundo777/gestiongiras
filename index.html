@@ -89,7 +89,7 @@
   <!-- VISTA CARGAR -->
   <div id="view-cargar">
     <div id="configWarning" class="warning-banner" style="display:none">
-      ⚠️ Configurá tu API key y planilla en la pestaña Config antes de cargar gastos.
+      ⚠️ Configurá el ID de tu planilla en la pestaña Config antes de cargar gastos.
     </div>
 
     <div class="card">
@@ -211,18 +211,6 @@
   <!-- VISTA CONFIG -->
   <div id="view-config" style="display:none">
     <div class="card">
-      <div class="section-label">API de Claude (Anthropic)</div>
-      <div class="config-field">
-        <label>API Key</label>
-        <input type="password" id="apiKey" placeholder="sk-ant-..." oninput="saveConfig()" autocomplete="off">
-        <div class="config-hint">
-          Conseguila en <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.<br>
-          Cada integrante puede usar la misma key o tener la suya.
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
       <div class="section-label">Google Sheets</div>
       <div class="config-field">
         <label>ID de la planilla</label>
@@ -235,14 +223,6 @@
       <div class="config-field">
         <label>Nombre de la hoja (pestaña)</label>
         <input type="text" id="sheetName" placeholder="Ej: Gira 2025" oninput="saveConfig()">
-      </div>
-      <div class="config-field">
-        <label>API Key de Google Sheets</label>
-        <input type="password" id="googleApiKey" placeholder="AIza..." oninput="saveConfig()" autocomplete="off">
-        <div class="config-hint">
-          Necesaria para escribir en Sheets. Conseguila en <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> → APIs & Services → Credentials.<br>
-          También podés omitirla y usar el modo manual (el gasto queda en historial para copiar a mano).
-        </div>
       </div>
     </div>
 
@@ -280,6 +260,9 @@
 </div>
 
 <script>
+const CLAUDE_API_KEY = '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';
+const GOOGLE_API_KEY = 'AIzaSyAsKjkMGQyUaJgMipd49rhA2HhXZQM2c-o';
+
 let photoBase64 = null;
 let photoMediaType = 'image/jpeg';
 let historial = [];
@@ -293,10 +276,9 @@ function showTab(tab) {
 }
 
 function checkConfig() {
-  const apiKey = getSaved('gira_apiKey');
   const sheetId = getSaved('gira_sheetId');
   const warn = document.getElementById('configWarning');
-  warn.style.display = (!apiKey || !sheetId) ? 'block' : 'none';
+  warn.style.display = !sheetId ? 'block' : 'none';
 }
 
 function triggerFileInput() {
@@ -325,11 +307,7 @@ function handlePhoto(e) {
 }
 
 async function analyzeReceipt() {
-  const apiKey = getSaved('gira_apiKey');
-  if (!apiKey) {
-    showMsg('error', 'Configurá tu API key en la pestaña Config primero.');
-    return;
-  }
+  const apiKey = CLAUDE_API_KEY;
   document.getElementById('analyzingArea').style.display = 'flex';
   clearMsg();
   try {
@@ -384,7 +362,7 @@ Hoy es ${today}. Si no podés detectar un campo, poné null.` }
 async function guardarGasto() {
   const sheetId = getSaved('gira_sheetId');
   const sheetName = getSaved('gira_sheetName') || 'Hoja1';
-  const googleApiKey = getSaved('gira_googleApiKey');
+  const googleApiKey = GOOGLE_API_KEY;
   const fecha = document.getElementById('f-fecha').value;
   const monto = document.getElementById('f-monto').value;
 
@@ -503,10 +481,8 @@ function clearMsg() { const a=document.getElementById('msgArea'); a.style.displa
 function getSaved(key) { try { return localStorage.getItem(key)||''; } catch(e){ return ''; } }
 function saveConfig() {
   try {
-    localStorage.setItem('gira_apiKey', document.getElementById('apiKey').value);
     localStorage.setItem('gira_sheetId', document.getElementById('sheetId').value);
     localStorage.setItem('gira_sheetName', document.getElementById('sheetName').value);
-    localStorage.setItem('gira_googleApiKey', document.getElementById('googleApiKey').value);
   } catch(e){}
 }
 function abrirPlanilla() {
@@ -515,10 +491,11 @@ function abrirPlanilla() {
   window.open('https://docs.google.com/spreadsheets/d/'+id, '_blank');
 }
 
-// Cargar config guardada
 try {
-  const fields = { gira_apiKey: 'apiKey', gira_sheetId: 'sheetId', gira_sheetName: 'sheetName', gira_googleApiKey: 'googleApiKey' };
-  Object.entries(fields).forEach(([k,id]) => { const v=localStorage.getItem(k); if(v && document.getElementById(id)) document.getElementById(id).value=v; });
+  const sid = localStorage.getItem('gira_sheetId');
+  const sname = localStorage.getItem('gira_sheetName');
+  if (sid && document.getElementById('sheetId')) document.getElementById('sheetId').value = sid;
+  if (sname && document.getElementById('sheetName')) document.getElementById('sheetName').value = sname;
 } catch(e){}
 
 document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
