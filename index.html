@@ -416,16 +416,7 @@ async function guardarGasto() {
       historial.unshift(gastoLocal);
       renderHistorial();
       showMsg('error', '⚠️ No se pudo guardar en Sheets. El gasto quedó en el historial local. Verificá tu Google API Key.');
-    }
-  } else {
-    historial.unshift(gastoLocal);
-    renderHistorial();
-    if (!sheetId) {
-      showMsg('info', '📋 Gasto guardado en historial local. Para guardar en Sheets, configurá el ID de planilla en Config.');
-    } else {
-      showMsg('info', '📋 Gasto guardado en historial local. Para guardar automáticamente en Sheets, configurá la Google API Key en Config.');
-    }
-  }
+}
 
   btn.disabled = false;
   btn.textContent = '☁️ Guardar en Google Sheets';
