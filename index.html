@@ -260,8 +260,10 @@
 </div>
 
 <script>
-const CLAUDE_API_KEY = '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';
+const CLAUDE_API_KEY = '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';
 const GOOGLE_API_KEY = 'AIzaSyCRYlqtqEDPJ6tO6C74HA3F0hpRPZsT01c';
+const SHEET_ID = '1AwWiBmDfiRdc1HjtmuafYpa0etu7mZWno7zoSQSxWHs';
+const SHEET_NAME = 'Gira 2026';
 
 let photoBase64 = null;
 let photoMediaType = 'image/jpeg';
@@ -360,8 +362,8 @@ Hoy es ${today}. Si no podés detectar un campo, poné null.` }
 }
 
 async function guardarGasto() {
-  const sheetId = getSaved('gira_sheetId');
-  const sheetName = getSaved('gira_sheetName') || 'Hoja1';
+  const sheetId = SHEET_ID;
+  const sheetName = SHEET_NAME;
   const googleApiKey = GOOGLE_API_KEY;
   const fecha = document.getElementById('f-fecha').value;
   const monto = document.getElementById('f-monto').value;
